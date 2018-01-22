@@ -48,8 +48,17 @@ func (api *API) registerKeystone(ws *restful.WebService) {
 		Route(ws.POST(path).
 			To(api.keystoneAuthenticate).
 			Doc("Authenticate using a Keystone-style request").
-			Operation("authenticate").
 			Reads(KeystoneAuthReq{}).
+			Writes(KeystoneAuthResponse{}))
+
+	ws.
+		Route(ws.GET(path).
+			To(api.keystoneShow).
+			Doc("Validates and shows information for a token").
+			Param(restful.HeaderParameter(
+				"X-Auth-Token", "A valid authentication token for an administrative user.")).
+			Param(restful.HeaderParameter(
+				"X-Subject-Token", "The authentication token.")).
 			Writes(KeystoneAuthResponse{}))
 }
 
@@ -91,20 +100,55 @@ func (api *API) keystoneAuthenticate(request *restful.Request, response *restful
 		panic(err)
 	}
 
-	stdClaims := jwt.StandardClaims{}
-
-	if _, err := jwt.ParseWithClaims(tokenString, &stdClaims, func(t *jwt.Token) (interface{}, error) {
-		return api.PublicKey, nil
-	}); err != nil {
+	stdClaims, err := api.checkToken(tokenString)
+	if err != nil {
 		panic(err)
 	}
 
-	authResp := &KeystoneAuthResponse{}
-	authResp.Token.IssuedAt = time.Unix(stdClaims.IssuedAt, 0)
-	authResp.Token.ExpiresAt = time.Unix(stdClaims.ExpiresAt, 0)
-	authResp.Token.User.Id = stdClaims.Subject
-	authResp.Token.User.Name = stdClaims.Subject
+	authResp := newKeystoneAuthRespFromClaims(stdClaims)
 
 	response.Header().Set("X-Subject-Token", tokenString)
 	response.WriteHeaderAndEntity(http.StatusCreated, authResp)
+}
+
+func newKeystoneAuthRespFromClaims(claims *jwt.StandardClaims) *KeystoneAuthResponse {
+	authResp := &KeystoneAuthResponse{}
+	authResp.Token.IssuedAt = time.Unix(claims.IssuedAt, 0)
+	authResp.Token.ExpiresAt = time.Unix(claims.ExpiresAt, 0)
+	authResp.Token.User.Id = claims.Subject
+	authResp.Token.User.Name = claims.Subject
+	return authResp
+}
+
+func (api *API) keystoneCheck(request *restful.Request, response *restful.Response) {
+	api.keystoneCheckClaims(request, response)
+}
+
+func (api *API) keystoneShow(request *restful.Request, response *restful.Response) {
+	claims := api.keystoneCheckClaims(request, response)
+
+	if claims == nil {
+		return
+	}
+
+	response.WriteEntity(newKeystoneAuthRespFromClaims(claims))
+}
+
+// return nil iff check fails (response already filled)
+func (api *API) keystoneCheckClaims(request *restful.Request, response *restful.Response) *jwt.StandardClaims {
+	authToken := request.HeaderParameter("X-Auth-Token")
+	if _, err := api.checkToken(authToken); err != nil {
+		response.WriteError(http.StatusUnauthorized, err)
+		return nil
+	}
+
+	subjectToken := request.HeaderParameter("X-Subject-Token")
+	claims, err := api.checkToken(subjectToken)
+	if err != nil {
+		response.WriteError(http.StatusBadRequest, err)
+		return nil
+	}
+
+	response.WriteHeader(http.StatusOK)
+	return claims
 }
