@@ -8,26 +8,32 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
 	"github.com/mcluseau/autorizo/api"
+
+	"github.com/mcluseau/autorizo/auth/ldap-bind"
 	"github.com/mcluseau/autorizo/auth/stupid-auth"
+	"github.com/mcluseau/autorizo/auth/users-file"
 )
 
 var (
-	bind = flag.String("bind", ":8080", "HTTP bind specification")
+	bind          = flag.String("bind", ":8080", "HTTP bind specification")
+	tokenDuration = flag.Duration("token-duration", 1*time.Hour, "Duration of emitted tokens")
 )
 
 func main() {
 	key, pubKey, sm := initJWT()
 
 	hAPI := &api.API{
-		Authenticator: stupidauth.New(),
+		Authenticator: getAuthenticator(),
 		PrivateKey:    key,
 		PublicKey:     pubKey,
 		SigningMethod: sm,
+		TokenDuration: *tokenDuration,
 	}
 
 	restful.DefaultRequestContentType(restful.MIME_JSON)
@@ -107,4 +113,23 @@ func requireEnv(name, description string) string {
 		log.Fatal("Env ", name, " is required: ", description)
 	}
 	return v
+}
+
+func getAuthenticator() api.Authenticator {
+	switch v := os.Getenv("AUTH_BACKEND"); v {
+	case "", "stupid":
+		return stupidauth.New()
+
+	case "file":
+		return usersfile.New(requireEnv("AUTH_FILE", "File containings users when using file auth"))
+
+	case "ldap-bind":
+		return ldapbind.New(
+			requireEnv("LDAP_SERVER", "LDAP server"),
+			requireEnv("LDAP_USER", "LDAP user template (%s is substituted)"))
+
+	default:
+		log.Fatal("Unknown authenticator: ", v)
+		return nil
+	}
 }

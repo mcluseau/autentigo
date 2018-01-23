@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
@@ -12,7 +13,7 @@ var (
 )
 
 type Authenticator interface {
-	Authenticate(user, password string) (claims jwt.Claims, err error)
+	Authenticate(user, password string, expiresAt time.Time) (claims jwt.Claims, err error)
 }
 
 type API struct {
@@ -20,6 +21,7 @@ type API struct {
 	PublicKey     interface{}
 	PrivateKey    interface{}
 	SigningMethod jwt.SigningMethod
+	TokenDuration time.Duration
 }
 
 func (api *API) Register() *restful.WebService {

@@ -86,7 +86,7 @@ func (api *API) keystoneAuthenticate(request *restful.Request, response *restful
 		login = user.Name
 	}
 
-	claims, err := api.Authenticator.Authenticate(login, user.Password)
+	claims, err := api.authenticate(login, user.Password)
 	if err == ErrInvalidAuthentication {
 		response.WriteErrorString(http.StatusUnauthorized, "Authentication failed")
 		return
