@@ -14,9 +14,12 @@ autorizo --help
 
 ### Environment
 
-| `TLS_CRT`      | The certificate to check tokens
-| `TLS_KEY`      | The key to sign tokens
-| `AUTH_BACKEND` | choose an authentication backend (default: stupid)
+| Variable         | Description
+| ---------------- | ------------------------------------------------
+| `TLS_CRT`        | The certificate to check tokens
+| `TLS_KEY`        | The key to sign tokens
+| `SIGNING_METHOD` | The signing method to use (https://tools.ietf.org/html/rfc7518#section-3.1)
+| `AUTH_BACKEND`   | choose an authentication backend (default: stupid)
 
 ### Auth backends
 
