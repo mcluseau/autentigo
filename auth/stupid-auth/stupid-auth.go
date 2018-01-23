@@ -15,10 +15,10 @@ type stupidAuth struct{}
 
 var _ api.Authenticator = stupidAuth{}
 
-func (sa stupidAuth) Authenticate(user, password string) (jwt.Claims, error) {
+func (sa stupidAuth) Authenticate(user, password string, expiresAt time.Time) (jwt.Claims, error) {
 	return jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
+		ExpiresAt: expiresAt.Unix(),
 		Subject:   user,
 	}, nil
 }
