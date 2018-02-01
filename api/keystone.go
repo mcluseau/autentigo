@@ -122,6 +122,7 @@ func newKeystoneAuthRespFromClaims(claims *jwt.StandardClaims) *KeystoneAuthResp
 
 func (api *API) keystoneCheck(request *restful.Request, response *restful.Response) {
 	api.keystoneCheckClaims(request, response)
+	response.WriteHeader(http.StatusOK)
 }
 
 func (api *API) keystoneShow(request *restful.Request, response *restful.Response) {
@@ -131,7 +132,7 @@ func (api *API) keystoneShow(request *restful.Request, response *restful.Respons
 		return
 	}
 
-	response.WriteEntity(newKeystoneAuthRespFromClaims(claims))
+	response.WriteHeaderAndEntity(http.StatusOK, newKeystoneAuthRespFromClaims(claims))
 }
 
 // return nil iff check fails (response already filled)
@@ -149,6 +150,5 @@ func (api *API) keystoneCheckClaims(request *restful.Request, response *restful.
 		return nil
 	}
 
-	response.WriteHeader(http.StatusOK)
 	return claims
 }
