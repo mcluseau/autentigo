@@ -48,6 +48,8 @@ func (api *API) registerKeystone(ws *restful.WebService) {
 		Route(ws.POST(path).
 			To(api.keystoneAuthenticate).
 			Doc("Authenticate using a Keystone-style request").
+			Consumes("application/json").
+			Produces("application/json").
 			Reads(KeystoneAuthReq{}).
 			Writes(KeystoneAuthResponse{}))
 
@@ -55,11 +57,21 @@ func (api *API) registerKeystone(ws *restful.WebService) {
 		Route(ws.GET(path).
 			To(api.keystoneShow).
 			Doc("Validates and shows information for a token").
+			Produces("application/json").
 			Param(restful.HeaderParameter(
 				"X-Auth-Token", "A valid authentication token for an administrative user.")).
 			Param(restful.HeaderParameter(
 				"X-Subject-Token", "The authentication token.")).
 			Writes(KeystoneAuthResponse{}))
+
+	ws.
+		Route(ws.HEAD(path).
+			To(api.keystoneCheck).
+			Doc("Validates a token").
+			Param(restful.HeaderParameter(
+				"X-Auth-Token", "A valid authentication token for an administrative user.")).
+			Param(restful.HeaderParameter(
+				"X-Subject-Token", "The authentication token.")))
 }
 
 func (api *API) keystoneAuthenticate(request *restful.Request, response *restful.Response) {
@@ -122,6 +134,7 @@ func newKeystoneAuthRespFromClaims(claims *jwt.StandardClaims) *KeystoneAuthResp
 
 func (api *API) keystoneCheck(request *restful.Request, response *restful.Response) {
 	api.keystoneCheckClaims(request, response)
+	response.Header().Set("Content-Length", "0")
 	response.WriteHeader(http.StatusOK)
 }
 
