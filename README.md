@@ -3,6 +3,7 @@
 ```
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout tls.key -out tls.crt -subj /CN=localhost
 export TLS_CRT="$(<tls.crt)" TLS_KEY="$(<tls.key)"
+export SIGNING_METHOD=RS
 autorizo
 ```
 
@@ -54,3 +55,24 @@ LDAP_USER=uid=%s,ou=users,dc=example,dc=com \
 autorizo
 ```
 
+#### etcd lookup
+
+Looks up the user in etcd, with a key like `prefix/user-name`. Takes an optionnal `ETCD_TIMEOUT` to change the lookup timeout.
+
+Example:
+```sh
+AUTH_BACKEND=etcd \
+ETCD_ENDPOINTS=http://localhost:2379 \
+ETCD_PREFIX=/users \
+autorizo
+```
+
+Allowed extra claims in the etcd object:
+```json
+{
+    "password_hash": "<password sha256, hex encoded)>",
+    "groups": [ "app1-admin", "app2-reader" ],
+    "email": "user@host",
+    "email_verified": true
+}
+```

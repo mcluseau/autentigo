@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/emicklei/go-restful/swagger"
 	"github.com/mcluseau/autorizo/api"
 
+	"github.com/mcluseau/autorizo/auth/etcd"
 	"github.com/mcluseau/autorizo/auth/ldap-bind"
 	"github.com/mcluseau/autorizo/auth/stupid-auth"
 	"github.com/mcluseau/autorizo/auth/users-file"
@@ -127,6 +129,11 @@ func getAuthenticator() api.Authenticator {
 		return ldapbind.New(
 			requireEnv("LDAP_SERVER", "LDAP server"),
 			requireEnv("LDAP_USER", "LDAP user template (%s is substituted)"))
+
+	case "etcd":
+		return etcd.New(
+			requireEnv("ETCD_PREFIX", "etcd prefix"),
+			strings.Split(requireEnv("ETCD_ENDPOINTS", "etcd endpoints"), ","))
 
 	default:
 		log.Fatal("Unknown authenticator: ", v)
