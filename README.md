@@ -3,8 +3,45 @@
 ```
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout tls.key -out tls.crt -subj /CN=localhost
 export TLS_CRT="$(<tls.crt)" TLS_KEY="$(<tls.key)"
-export SIGNING_METHOD=RS
+export SIGNING_METHOD=RS256
 autorizo
+```
+
+### Request examples
+
+Simple authentication:
+```
+$ curl -H'Content-Type: application/json' localhost:8080/simple -d'{"user":"test-user","password":"test-password"}'
+{
+  "token": "<TOKEN>"
+ }
+```
+
+Basic authentication:
+```
+$ curl -i localhost:8080/basic
+HTTP/1.1 401 Unauthorized
+Www-Authenticate: Basic realm="Autorizo"
+Date: Wed, 27 Jun 2018 06:50:59 GMT
+Content-Length: 14
+Content-Type: text/plain; charset=utf-8
+
+Unauthorized.
+$ curl --basic --user test-user:test-password localhost:8080/basic
+{
+  "token": "<TOKEN>"
+ }
+```
+
+Basic authentication, setting only a cookie (also supported on /simple):
+```
+$ curl --basic --user test-user:test-password localhost:8080/basic -H'X-Set-Cookie: token' -i
+HTTP/1.1 201 Created
+Set-Cookie: token=<TOKEN>; HttpOnly; Secure
+Date: ...
+Content-Length: 0
+
+
 ```
 
 ### Flags

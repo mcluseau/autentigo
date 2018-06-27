@@ -26,6 +26,8 @@ type API struct {
 
 func (api *API) Register() *restful.WebService {
 	ws := &restful.WebService{}
+	api.registerBasic(ws)
+	api.registerSimple(ws)
 	api.registerKeystone(ws)
 	return ws
 }

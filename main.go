@@ -78,6 +78,10 @@ func initJWT() (key interface{}, cert interface{}, method jwt.SigningMethod) {
 
 	method = jwt.GetSigningMethod(sm)
 
+	if method == nil {
+		log.Fatal("unknown signing method: ", sm)
+	}
+
 	switch sm[:2] {
 	case "RS":
 		if x, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(keyData)); err == nil {
@@ -106,6 +110,7 @@ func initJWT() (key interface{}, cert interface{}, method jwt.SigningMethod) {
 	default:
 		log.Fatal("Invalid SIGNING_METHOD: ", sm)
 	}
+
 	return
 }
 
