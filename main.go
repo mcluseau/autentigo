@@ -14,8 +14,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
 	"github.com/emicklei/go-restful/swagger"
-	"github.com/mcluseau/autorizo/api"
 
+	"github.com/mcluseau/autorizo/api"
 	"github.com/mcluseau/autorizo/auth/etcd"
 	"github.com/mcluseau/autorizo/auth/ldap-bind"
 	"github.com/mcluseau/autorizo/auth/stupid-auth"
