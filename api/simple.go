@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
 )
 
@@ -26,7 +27,8 @@ type AuthReq struct {
 }
 
 type AuthResponse struct {
-	Token string `json:"token"`
+	Token  string     `json:"token"`
+	Claims jwt.Claims `json:"claims"`
 }
 
 func (api *API) simpleAuthenticate(request *restful.Request, response *restful.Response) {
@@ -106,9 +108,9 @@ func (api *API) writeAuthResponse(request *restful.Request, response *restful.Re
 			Value:    tokenString,
 		})
 
-		response.WriteHeader(http.StatusCreated)
+		response.WriteEntity(claims)
 		return
 	}
 
-	response.WriteHeaderAndEntity(http.StatusCreated, &AuthResponse{tokenString})
+	response.WriteEntity(&AuthResponse{tokenString, claims})
 }

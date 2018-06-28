@@ -13,7 +13,12 @@ Simple authentication:
 ```
 $ curl -H'Content-Type: application/json' localhost:8080/simple -d'{"user":"test-user","password":"test-password"}'
 {
-  "token": "<TOKEN>"
+  "token": "<TOKEN>",
+  "claims": {
+   "exp": 1530230496,
+   "iat": 1530226896,
+   "sub": "test-user"
+  }
  }
 ```
 
@@ -27,21 +32,34 @@ Content-Length: 14
 Content-Type: text/plain; charset=utf-8
 
 Unauthorized.
+```
+
+```
 $ curl --basic --user test-user:test-password localhost:8080/basic
 {
-  "token": "<TOKEN>"
+  "token": "<TOKEN>",
+  "claims": {
+   "exp": 1530230496,
+   "iat": 1530226896,
+   "sub": "test-user"
+  }
  }
 ```
 
 Basic authentication, setting only a cookie (also supported on /simple):
 ```
 $ curl --basic --user test-user:test-password localhost:8080/basic -H'X-Set-Cookie: token' -i
-HTTP/1.1 201 Created
+HTTP/1.1 200 OK
+Content-Type: application/json
 Set-Cookie: token=<TOKEN>; HttpOnly; Secure
-Date: ...
-Content-Length: 0
+Date: Thu, 28 Jun 2018 22:59:57 GMT
+Content-Length: 67
 
-
+{
+  "exp": 1530230397,
+  "iat": 1530226797,
+  "sub": "test-user"
+ }
 ```
 
 ### Flags
