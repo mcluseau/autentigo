@@ -28,12 +28,10 @@ func (api *API) k8sTokenReview(request *restful.Request, response *restful.Respo
 
 	claims, err := api.checkToken(req.Spec.Token)
 
-	groupVersionKind := authv1.SchemeGroupVersion.WithKind("TokenReview")
-
 	tr := &authv1.TokenReview{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: groupVersionKind.Version,
-			Kind:       groupVersionKind.Kind,
+			APIVersion: req.APIVersion,
+			Kind:       req.Kind,
 		},
 	}
 
