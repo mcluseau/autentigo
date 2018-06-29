@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
+	"github.com/mcluseau/autorizo/auth"
 )
 
 // Keystone API (like) auth request
@@ -123,7 +123,7 @@ func (api *API) keystoneAuthenticate(request *restful.Request, response *restful
 	response.WriteHeaderAndEntity(http.StatusCreated, authResp)
 }
 
-func newKeystoneAuthRespFromClaims(claims *jwt.StandardClaims) *KeystoneAuthResponse {
+func newKeystoneAuthRespFromClaims(claims *auth.Claims) *KeystoneAuthResponse {
 	authResp := &KeystoneAuthResponse{}
 	authResp.Token.IssuedAt = time.Unix(claims.IssuedAt, 0)
 	authResp.Token.ExpiresAt = time.Unix(claims.ExpiresAt, 0)
@@ -149,7 +149,7 @@ func (api *API) keystoneShow(request *restful.Request, response *restful.Respons
 }
 
 // return nil iff check fails (response already filled)
-func (api *API) keystoneCheckClaims(request *restful.Request, response *restful.Response) *jwt.StandardClaims {
+func (api *API) keystoneCheckClaims(request *restful.Request, response *restful.Response) *auth.Claims {
 	authToken := request.HeaderParameter("X-Auth-Token")
 	if _, err := api.checkToken(authToken); err != nil {
 		response.WriteError(http.StatusUnauthorized, err)

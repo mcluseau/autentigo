@@ -29,5 +29,6 @@ func (api *API) Register() *restful.WebService {
 	api.registerBasic(ws)
 	api.registerSimple(ws)
 	api.registerKeystone(ws)
+	api.registerK8sAuthenticator(ws)
 	return ws
 }

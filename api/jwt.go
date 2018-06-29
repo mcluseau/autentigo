@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+
+	"github.com/mcluseau/autorizo/auth"
 )
 
 func (api *API) createToken(user string, claims jwt.Claims) (*jwt.Token, string, error) {
@@ -16,8 +18,8 @@ func (api *API) keyfunc(t *jwt.Token) (interface{}, error) {
 	return api.PublicKey, nil
 }
 
-func (api *API) checkToken(tokenString string) (*jwt.StandardClaims, error) {
-	claims := &jwt.StandardClaims{}
+func (api *API) checkToken(tokenString string) (*auth.Claims, error) {
+	claims := &auth.Claims{}
 
 	if _, err := jwt.ParseWithClaims(tokenString, claims, api.keyfunc); err != nil {
 		return nil, err
