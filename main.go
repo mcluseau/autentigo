@@ -23,8 +23,11 @@ import (
 )
 
 var (
-	bind          = flag.String("bind", ":8080", "HTTP bind specification")
 	tokenDuration = flag.Duration("token-duration", 1*time.Hour, "Duration of emitted tokens")
+	bind          = flag.String("bind", ":8080", "HTTP bind specification")
+	tlsBind       = flag.String("tls-bind", ":8443", "HTTPS bind specification")
+	tlsKeyFile    = flag.String("tls-bind-key", "", "File containing the TLS listener's key")
+	tlsCertFile   = flag.String("tls-bind-cert", "", "File containing the TLS listener's certificate")
 )
 
 func main() {
@@ -66,9 +69,19 @@ func main() {
 		l.Close()
 	}()
 
-	if err := http.Serve(l, restful.DefaultContainer); err != nil {
-		log.Fatal(err)
+	if *tlsKeyFile != "" && *tlsCertFile != "" {
+		go func() {
+			log.Print("TLS listening on ", *bind)
+			log.Fatal(http.ListenAndServeTLS(
+				*tlsBind, *tlsKeyFile, *tlsCertFile,
+				restful.DefaultContainer))
+		}()
+
+	} else if *tlsKeyFile != "" || *tlsCertFile != "" {
+		log.Fatal("please specify both tls-key and tls-cert, or none.")
 	}
+
+	log.Fatal(http.Serve(l, restful.DefaultContainer))
 }
 
 func initJWT() (key interface{}, cert interface{}, method jwt.SigningMethod) {
