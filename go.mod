@@ -6,18 +6,27 @@ require (
 	github.com/emicklei/go-restful v0.0.0-20151126145626-777bb3f19bca
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/groupcache v0.0.0-20180513044358-24b0969c4cb7
+	github.com/golang/protobuf v1.1.0
 	github.com/google/btree v0.0.0-20180124185431-e89373fe6b4a
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf
 	github.com/gorilla/websocket v1.2.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/onsi/ginkgo v1.5.0
 	github.com/onsi/gomega v1.4.0
+	github.com/prometheus/client_golang v0.9.0-pre1
+	github.com/prometheus/client_model v0.0.0-20171117100541-99fa1f4be8e5
+	github.com/prometheus/common v0.0.0-20180518154759-7600349dcfe1
+	github.com/prometheus/procfs v0.0.0-20180612222113-7d6f385de8be
 	github.com/stretchr/testify v1.2.2
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20171017195756-830351dc03c6
 	github.com/ugorji/go v1.1.1
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
+	google.golang.org/genproto v0.0.0-20180627194029-ff3583edef7d
 	gopkg.in/airbrake/gobrake.v2 v2.0.9
 	gopkg.in/asn1-ber.v1 v1.0.0-20170511165959-379148ca0225
 	gopkg.in/check.v1 v1.0.0-20161208181325-20d25e280405
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2
 	gopkg.in/ldap.v2 v2.5.1
+	k8s.io/api v0.0.0-20180627175448-9e5ffd1f1320
+	k8s.io/apimachinery v0.0.0-20180628120107-97cca6cc910b
 )
