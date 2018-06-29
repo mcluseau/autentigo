@@ -31,6 +31,8 @@ var (
 )
 
 func main() {
+	flag.Parse()
+
 	key, pubKey, sm := initJWT()
 
 	hAPI := &api.API{
