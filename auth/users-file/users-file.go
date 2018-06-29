@@ -1,17 +1,25 @@
 package usersfile
 
 import (
-	"bufio"
 	"crypto/sha256"
+	"encoding/csv"
 	"encoding/hex"
 	"io"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
+
 	"github.com/mcluseau/autorizo/api"
+	"github.com/mcluseau/autorizo/auth"
 )
+
+var yesValues = map[string]bool{
+	"true": true,
+	"yes":  true,
+	"1":    true,
+}
 
 func New(filePath string) api.Authenticator {
 	return &usersFileAuth{
@@ -36,26 +44,50 @@ func (a usersFileAuth) Authenticate(user, password string, expiresAt time.Time) 
 
 	defer f.Close()
 
-	r := bufio.NewReader(f)
+	r := csv.NewReader(f)
+	r.Comma = ':'
 
 	for {
-		line, err := r.ReadString('\n')
+		record, err := r.Read()
 		if err == io.EOF {
 			break
 		} else if err != nil {
 			return nil, err
 		}
 
-		parts := strings.SplitN(strings.TrimSpace(line), ":", 2)
-		fileUser, hash := parts[0], parts[1]
+		if len(record) < 2 {
+			// record too short
+			continue
+		}
 
-		if user == fileUser && hash == passwordHash {
-			return jwt.StandardClaims{
+		fileUser, hash := record[0], record[1]
+
+		if user != fileUser || hash != passwordHash {
+			continue
+		}
+
+		claims := auth.ExtraClaims{}
+
+		l := len(record)
+		switch {
+		case l >= 5:
+			claims.Groups = strings.Split(record[4], ",")
+			fallthrough
+		case l == 4:
+			claims.EmailVerified = yesValues[record[3]]
+			fallthrough
+		case l == 3:
+			claims.Email = record[2]
+		}
+
+		return auth.Claims{
+			StandardClaims: jwt.StandardClaims{
 				IssuedAt:  time.Now().Unix(),
 				ExpiresAt: expiresAt.Unix(),
 				Subject:   user,
-			}, nil
-		}
+			},
+			ExtraClaims: claims,
+		}, nil
 	}
 
 	return nil, api.ErrInvalidAuthentication

@@ -12,7 +12,9 @@ import (
 
 	"github.com/coreos/etcd/clientv3"
 	jwt "github.com/dgrijalva/jwt-go"
+
 	"github.com/mcluseau/autorizo/api"
+	"github.com/mcluseau/autorizo/auth"
 )
 
 func New(prefix string, endpoints []string) api.Authenticator {
@@ -49,18 +51,7 @@ var _ api.Authenticator = &etcdAuth{}
 
 type User struct {
 	PasswordHash string `json:"password_hash"`
-	ExtraClaims
-}
-
-type ExtraClaims struct {
-	Email         string   `json:"email,omitempty"`
-	EmailVerified bool     `json:"email_verified,omitempty"`
-	Groups        []string `json:"groups,omitempty"`
-}
-
-type Claims struct {
-	jwt.StandardClaims
-	ExtraClaims
+	auth.ExtraClaims
 }
 
 func (a *etcdAuth) Authenticate(user, password string, expiresAt time.Time) (claims jwt.Claims, err error) {
@@ -90,7 +81,7 @@ func (a *etcdAuth) Authenticate(user, password string, expiresAt time.Time) (cla
 		return
 	}
 
-	claims = Claims{
+	claims = auth.Claims{
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: expiresAt.Unix(),

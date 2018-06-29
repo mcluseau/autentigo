@@ -88,13 +88,14 @@ Always accept the given credentials.
 Reads a file, defined by the `AUTH_FILE` env, in the format:
 
 ```
-<user name>:<password SHA256 (hex)>
+<user name>:<password SHA256 (hex)>:email:email_validated:groups
 ```
 
-Adding an entry:
+Only user and password are required.
 
+Adding an entry can be done this way:
 ```
-echo test-user:$(echo -n test-password |sha256sum |awk '{print $1}') >>users
+echo test-user:$(echo -n test-password |sha256sum |awk '{print $1}'):email@example.com:yes:group1,group2 >>users
 ```
 
 #### LDAP simple bind
