@@ -21,11 +21,13 @@ func (api *API) registerSimple(ws *restful.WebService) {
 			Writes(AuthResponse{}))
 }
 
+// AuthReq is a simple authn request
 type AuthReq struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 }
 
+// AuthResponse is a simple JWT authn response
 type AuthResponse struct {
 	Token  string     `json:"token"`
 	Claims jwt.Claims `json:"claims"`

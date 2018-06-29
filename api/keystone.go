@@ -8,21 +8,22 @@ import (
 	"github.com/mcluseau/autorizo/auth"
 )
 
-// Keystone API (like) auth request
+// KeystoneAuthReq is a Keystone API like auth request
 type KeystoneAuthReq struct {
 	Auth *KeystoneAuth `json:"auth"`
 }
 
+// KeystoneAuth is a Keystone API like auth
 type KeystoneAuth struct {
 	Identity struct {
 		Methods  []string `json:"methods"`
 		Password struct {
 			User struct {
-				Id       string `json:"id,omitempty"`
+				ID       string `json:"id,omitempty"`
 				Name     string `json:"name,omitempty"`
 				Password string `json:"password"`
 				Domain   struct {
-					Id   string `json:"id,omitempty"`
+					ID   string `json:"id,omitempty"`
 					Name string `json:"name,omitempty"`
 				} `json:"domain"`
 			} `json:"user"`
@@ -30,12 +31,13 @@ type KeystoneAuth struct {
 	} `json:"identity"`
 }
 
+// KeystoneAuthResponse is a Keystone API like auth response
 type KeystoneAuthResponse struct {
 	Token struct {
 		IssuedAt  time.Time `json:"issued_at"`
 		ExpiresAt time.Time `json:"expires_at"`
 		User      struct {
-			Id   string `json:"id,omitempty"`
+			ID   string `json:"id,omitempty"`
 			Name string `json:"name,omitempty"`
 		} `json:"user"`
 	} `json:"token"`
@@ -93,7 +95,7 @@ func (api *API) keystoneAuthenticate(request *restful.Request, response *restful
 	}
 
 	user := authReq.Auth.Identity.Password.User
-	login := user.Id
+	login := user.ID
 	if login == "" {
 		login = user.Name
 	}
@@ -127,7 +129,7 @@ func newKeystoneAuthRespFromClaims(claims *auth.Claims) *KeystoneAuthResponse {
 	authResp := &KeystoneAuthResponse{}
 	authResp.Token.IssuedAt = time.Unix(claims.IssuedAt, 0)
 	authResp.Token.ExpiresAt = time.Unix(claims.ExpiresAt, 0)
-	authResp.Token.User.Id = claims.Subject
+	authResp.Token.User.ID = claims.Subject
 	authResp.Token.User.Name = claims.Subject
 	return authResp
 }
