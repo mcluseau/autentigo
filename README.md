@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/mcluseau/autorizo)](https://goreportcard.com/badge/github.com/mcluseau/autorizo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mcluseau/autorizo)](https://goreportcard.com/report/github.com/mcluseau/autorizo)
 
 ## Running
 
