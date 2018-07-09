@@ -13,15 +13,23 @@ autorizo
 
 Simple authentication:
 ```
-$ curl -H'Content-Type: application/json' localhost:8080/simple -d'{"user":"test-user","password":"test-password"}'
+$ curl -H'Content-Type: application/json' localhost:8080/simple -d'{"user":"test-user","password":"test-password"}' |jq .
 {
   "token": "<TOKEN>",
   "claims": {
-   "exp": 1530230496,
-   "iat": 1530226896,
-   "sub": "test-user"
+    "exp": 1531110508,
+    "iat": 1531106908,
+    "sub": "test-user",
+    "display_name": "Display Name",
+    "email": "email@example.com",
+    "email_verified": true,
+    "groups": [
+      "group1",
+      "group2"
+    ]
   }
- }
+  "claims":
+}
 ```
 
 Basic authentication:
@@ -37,15 +45,22 @@ Unauthorized.
 ```
 
 ```
-$ curl --basic --user test-user:test-password localhost:8080/basic
+$ curl --basic --user test-user:test-password localhost:8080/basic |jq .
 {
   "token": "<TOKEN>",
   "claims": {
-   "exp": 1530230496,
-   "iat": 1530226896,
-   "sub": "test-user"
+    "exp": 1531110508,
+    "iat": 1531106908,
+    "sub": "test-user",
+    "display_name": "Display Name",
+    "email": "email@example.com",
+    "email_verified": true,
+    "groups": [
+      "group1",
+      "group2"
+    ]
   }
- }
+}
 ```
 
 Basic authentication, setting only a cookie (also supported on /simple):
@@ -60,7 +75,8 @@ Content-Length: 67
 {
   "exp": 1530230397,
   "iat": 1530226797,
-  "sub": "test-user"
+  "sub": "test-user",
+  ...
  }
 ```
 
@@ -97,7 +113,7 @@ Only user and password are required.
 
 Adding an entry can be done this way:
 ```
-echo test-user:$(echo -n test-password |sha256sum |awk '{print $1}'):email@example.com:yes:group1,group2 >>users
+echo test-user:$(echo -n test-password |sha256sum |awk '{print $1}'):Display Name:email@example.com:yes:group1,group2 >>users
 ```
 
 #### LDAP simple bind
@@ -130,6 +146,7 @@ Allowed extra claims in the etcd object:
 {
     "password_hash": "<password sha256, hex encoded)>",
     "groups": [ "app1-admin", "app2-reader" ],
+    "display_name": "Display Name",
     "email": "user@host",
     "email_verified": true
 }

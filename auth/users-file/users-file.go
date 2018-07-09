@@ -70,14 +70,17 @@ func (a usersFileAuth) Authenticate(user, password string, expiresAt time.Time) 
 
 		l := len(record)
 		switch {
-		case l >= 5:
-			claims.Groups = strings.Split(record[4], ",")
+		case l >= 6:
+			claims.Groups = strings.Split(record[5], ",")
+			fallthrough
+		case l == 5:
+			claims.EmailVerified = yesValues[record[4]]
 			fallthrough
 		case l == 4:
-			claims.EmailVerified = yesValues[record[3]]
+			claims.Email = record[3]
 			fallthrough
 		case l == 3:
-			claims.Email = record[2]
+			claims.DisplayName = record[2]
 		}
 
 		return auth.Claims{
