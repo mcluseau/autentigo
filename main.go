@@ -28,6 +28,7 @@ var (
 	tlsBind       = flag.String("tls-bind", ":8443", "HTTPS bind specification")
 	tlsKeyFile    = flag.String("tls-bind-key", "", "File containing the TLS listener's key")
 	tlsCertFile   = flag.String("tls-bind-cert", "", "File containing the TLS listener's certificate")
+	disableCORS   = flag.Bool("no-cors", false, "Disable CORS support")
 )
 
 func main() {
@@ -54,6 +55,13 @@ func main() {
 		ApiPath:     "/apidocs.json",
 	}
 	swagger.InstallSwaggerService(config)
+
+	if !*disableCORS {
+		restful.Filter(restful.CrossOriginResourceSharing{
+			CookiesAllowed: true,
+			Container:      restful.DefaultContainer,
+		}.Filter)
+	}
 
 	l, err := net.Listen("tcp", *bind)
 	if err != nil {
