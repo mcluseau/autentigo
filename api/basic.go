@@ -24,7 +24,7 @@ func (api *API) basicAuthenticate(request *restful.Request, response *restful.Re
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			writeError(err.(error), response)
+			WriteError(err.(error), response)
 		}
 	}()
 

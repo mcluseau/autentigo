@@ -12,6 +12,7 @@ import (
 	"gopkg.in/ldap.v2"
 )
 
+// New Authenticator with ldap backend
 func New(server, userTemplate string) api.Authenticator {
 	u, err := url.Parse(server)
 	if err != nil {

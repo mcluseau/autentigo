@@ -7,6 +7,7 @@ import (
 	"github.com/mcluseau/autorizo/api"
 )
 
+// New Authenticator with no backend
 func New() api.Authenticator {
 	return stupidAuth{}
 }

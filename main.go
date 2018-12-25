@@ -146,6 +146,7 @@ func requireEnv(name, description string) string {
 }
 
 func getAuthenticator() api.Authenticator {
+
 	switch v := os.Getenv("AUTH_BACKEND"); v {
 	case "", "stupid":
 		return stupidauth.New()
