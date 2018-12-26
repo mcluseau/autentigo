@@ -13,7 +13,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/emicklei/go-restful"
-	"github.com/emicklei/go-restful/swagger"
+	restfulspec "github.com/emicklei/go-restful-openapi"
 
 	"github.com/mcluseau/autorizo/api"
 	"github.com/mcluseau/autorizo/auth/etcd"
@@ -50,11 +50,11 @@ func main() {
 
 	restful.Add(hAPI.Register())
 
-	config := swagger.Config{
-		WebServices: restful.DefaultContainer.RegisteredWebServices(),
-		ApiPath:     "/apidocs.json",
+	config := restfulspec.Config{
+		WebServices: restful.RegisteredWebServices(),
+		APIPath:     "/apidocs.json",
 	}
-	swagger.InstallSwaggerService(config)
+	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(config))
 
 	if !*disableCORS {
 		restful.Filter(restful.CrossOriginResourceSharing{
