@@ -21,6 +21,7 @@ var yesValues = map[string]bool{
 	"1":    true,
 }
 
+// New Authenticator with csv file backend
 func New(filePath string) api.Authenticator {
 	return &usersFileAuth{
 		filePath: filePath,

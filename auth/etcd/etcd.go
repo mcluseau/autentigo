@@ -17,6 +17,7 @@ import (
 	"github.com/mcluseau/autorizo/auth"
 )
 
+// New Authenticator with etcd backend
 func New(prefix string, endpoints []string) api.Authenticator {
 	client, err := clientv3.New(clientv3.Config{
 		Endpoints: endpoints,
@@ -49,12 +50,14 @@ type etcdAuth struct {
 
 var _ api.Authenticator = &etcdAuth{}
 
+// User describe an user stored in etcd
 type User struct {
 	PasswordHash string `json:"password_hash"`
 	auth.ExtraClaims
 }
 
 func (a *etcdAuth) Authenticate(user, password string, expiresAt time.Time) (claims jwt.Claims, err error) {
+
 	ba := sha256.Sum256([]byte(password))
 	passwordHash := hex.EncodeToString(ba[:])
 

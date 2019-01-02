@@ -8,7 +8,8 @@ import (
 	"github.com/emicklei/go-restful"
 )
 
-func writeError(err error, response *restful.Response) {
+// Write error in good http format with error stack in it
+func WriteError(err error, response *restful.Response) {
 	response.AddHeader("Content-Type", "text/plain")
 
 	if rfErr, ok := err.(restful.ServiceError); ok {

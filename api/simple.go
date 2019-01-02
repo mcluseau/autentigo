@@ -37,13 +37,13 @@ func (api *API) simpleAuthenticate(request *restful.Request, response *restful.R
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			writeError(err.(error), response)
+			WriteError(err.(error), response)
 		}
 	}()
 
 	authReq := AuthReq{}
 	if err := request.ReadEntity(&authReq); err != nil {
-		writeError(err, response)
+		WriteError(err, response)
 		return
 	}
 

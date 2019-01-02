@@ -80,13 +80,13 @@ func (api *API) keystoneAuthenticate(request *restful.Request, response *restful
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			writeError(err.(error), response)
+			WriteError(err.(error), response)
 		}
 	}()
 
 	authReq := KeystoneAuthReq{}
 	if err := request.ReadEntity(&authReq); err != nil {
-		writeError(err, response)
+		WriteError(err, response)
 		return
 	}
 	if authReq.Auth == nil {
