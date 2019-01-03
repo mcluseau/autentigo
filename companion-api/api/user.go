@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/mcluseau/autorizo/api"
 	"github.com/mcluseau/autorizo/companion-api/backend"
 )
 
@@ -52,7 +51,7 @@ func (cApi *CompanionAPI) createUser(request *restful.Request, response *restful
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			api.WriteError(err.(error), response)
+			writeError(err.(error), response)
 		}
 	}()
 
@@ -80,7 +79,7 @@ func (cApi *CompanionAPI) updateUser(request *restful.Request, response *restful
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			api.WriteError(err.(error), response)
+			writeError(err.(error), response)
 		}
 	}()
 
@@ -112,7 +111,7 @@ func (cApi *CompanionAPI) deleteUser(request *restful.Request, response *restful
 	defer func() {
 		if err := recover(); err != nil {
 			// unhandled error
-			api.WriteError(err.(error), response)
+			writeError(err.(error), response)
 		}
 	}()
 

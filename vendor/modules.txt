@@ -16,8 +16,6 @@ github.com/emicklei/go-restful
 github.com/emicklei/go-restful/log
 # github.com/emicklei/go-restful-openapi v1.0.0
 github.com/emicklei/go-restful-openapi
-# github.com/evanphx/json-patch v4.1.0+incompatible
-github.com/evanphx/json-patch
 # github.com/go-openapi/jsonpointer v0.17.0
 github.com/go-openapi/jsonpointer
 # github.com/go-openapi/jsonreference v0.17.0
@@ -49,8 +47,6 @@ github.com/mailru/easyjson/buffer
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
-# github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-github.com/nu7hatch/gouuid
 # golang.org/x/net v0.0.0-20181220203305-927f97764cc3
 golang.org/x/net/context
 golang.org/x/net/trace
