@@ -20,7 +20,12 @@ var (
 )
 
 func main() {
-	serverURL := flag.String("server", "http://localhost:8080", "Autorizo server URL")
+	defaultServer := os.Getenv("AZCTL_SERVER")
+	if len(defaultServer) == 0 {
+		defaultServer = "http://localhost:8080"
+	}
+
+	serverURL := flag.String("server", defaultServer, "Autorizo server URL")
 	flag.Parse()
 
 	az = client.New(*serverURL)
