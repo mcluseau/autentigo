@@ -6,22 +6,22 @@ require (
 	dmitri.shuralyov.com/service/change v0.0.0-20190130035545-6cc139383561 // indirect
 	git.apache.org/thrift.git v0.12.0 // indirect
 	github.com/Shopify/sarama v1.20.1 // indirect
-	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/coreos/etcd v3.3.11+incompatible
 	github.com/coreos/go-systemd v0.0.0-20181031085051-9002847aa142 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/emicklei/go-restful v2.8.1+incompatible
 	github.com/emicklei/go-restful-openapi v1.0.0
-	github.com/evanphx/json-patch v4.1.0+incompatible
+	github.com/evanphx/json-patch v4.1.0+incompatible // indirect
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-openapi/jsonpointer v0.18.0 // indirect
 	github.com/go-openapi/jsonreference v0.18.0 // indirect
 	github.com/go-openapi/spec v0.18.0 // indirect
 	github.com/go-openapi/swag v0.18.0 // indirect
-	github.com/gogo/protobuf v1.2.0
+	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
 	github.com/golang/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
-	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/google/pprof v0.0.0-20190109223431-e84dfd68c163 // indirect
 	github.com/googleapis/gax-go v2.0.2+incompatible // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect

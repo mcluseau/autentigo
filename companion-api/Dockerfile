@@ -1,4 +1,4 @@
-from golang:1.11.1-alpine3.8 as build-env
+from golang:1.11.5-alpine3.8 as build-env
 run apk update && apk add gcc musl-dev
 env pkg github.com/mcluseau/autorizo/companion-api
 add . /go/src/$pkg
