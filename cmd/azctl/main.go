@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/mcluseau/autorizo/client"
 )
 
@@ -30,7 +31,8 @@ func main() {
 
 	az = client.New(*serverURL)
 
-	if len(flag.Args()) < 1 {
+	args := flag.Args()
+	if len(args) < 1 {
 		fail(errors.New("need a command"))
 	}
 
@@ -45,10 +47,16 @@ func main() {
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT)
 
 	// execute command
-	switch v := flag.Args()[0]; v {
+	switch v := args[0]; v {
 	case "login":
 		login()
 
+	case "validate":
+		if len(args) < 2 {
+			fail(errors.New("validate command needs a token"))
+		}
+
+		validate(args[1])
 	default:
 		fail(fmt.Errorf("unknown command: %s", v))
 	}
@@ -79,10 +87,26 @@ func fail(err error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		resetTerm()
-		os.Exit(1)
+		os.Exit(255)
 	}
 }
 
 func resetTerm() {
 	termOut.WriteString("\x1b[0m")
+}
+
+func validate(token string) {
+	claims := jwt.MapClaims{}
+	ok, err := az.Validate(token, claims)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	} else if ok {
+		fmt.Println("Token is valid")
+		os.Exit(0)
+	} else {
+		fmt.Println("Token is NOT valid")
+		os.Exit(1)
+	}
 }
