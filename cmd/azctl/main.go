@@ -63,6 +63,10 @@ func login() {
 	password, err := termIn.ReadString('\n')
 	fail(err)
 
+	// remove trailing \n
+	username = username[0 : len(username)-1]
+	password = password[0 : len(password)-1]
+
 	resetTerm()
 
 	res, err := az.Login(username, password)
