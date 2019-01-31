@@ -13,10 +13,10 @@ import (
 	restful "github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
 
-	companionapi "github.com/mcluseau/autorizo/companion-api/api"
-	"github.com/mcluseau/autorizo/companion-api/backend"
-	"github.com/mcluseau/autorizo/companion-api/backend/etcd"
-	"github.com/mcluseau/autorizo/companion-api/backend/users-file"
+	companionapi "github.com/mcluseau/autorizo/pkg/companion-api/api"
+	"github.com/mcluseau/autorizo/pkg/companion-api/backend"
+	"github.com/mcluseau/autorizo/pkg/companion-api/backend/etcd"
+	"github.com/mcluseau/autorizo/pkg/companion-api/backend/users-file"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	restful "github.com/emicklei/go-restful"
-	"github.com/mcluseau/autorizo/companion-api/backend"
+	"github.com/mcluseau/autorizo/pkg/companion-api/backend"
 )
 
 var (

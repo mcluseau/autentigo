@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
-	"github.com/mcluseau/autorizo/companion-api/api"
-	"github.com/mcluseau/autorizo/companion-api/backend"
+	"github.com/mcluseau/autorizo/pkg/companion-api/api"
+	"github.com/mcluseau/autorizo/pkg/companion-api/backend"
 )
 
 type etcdClient struct {
