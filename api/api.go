@@ -20,6 +20,7 @@ type Authenticator interface {
 
 // API registering with restful
 type API struct {
+	CRTData       []byte
 	Authenticator Authenticator
 	PublicKey     interface{}
 	PrivateKey    interface{}
@@ -34,5 +35,6 @@ func (api *API) Register() *restful.WebService {
 	api.registerSimple(ws)
 	api.registerKeystone(ws)
 	api.registerK8sAuthenticator(ws)
+	api.registerCertificate(ws)
 	return ws
 }

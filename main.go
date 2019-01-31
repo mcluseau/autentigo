@@ -34,9 +34,10 @@ var (
 func main() {
 	flag.Parse()
 
-	key, pubKey, sm := initJWT()
+	key, pubKey, sm, crtData := initJWT()
 
 	hAPI := &api.API{
+		CRTData:       []byte(crtData),
 		Authenticator: getAuthenticator(),
 		PrivateKey:    key,
 		PublicKey:     pubKey,
@@ -94,8 +95,8 @@ func main() {
 	log.Fatal(http.Serve(l, restful.DefaultContainer))
 }
 
-func initJWT() (key interface{}, cert interface{}, method jwt.SigningMethod) {
-	crtData := requireEnv("TLS_CRT", "certificate used to sign/verify tokens")
+func initJWT() (key interface{}, cert interface{}, method jwt.SigningMethod, crtData string) {
+	crtData = requireEnv("TLS_CRT", "certificate used to sign/verify tokens")
 	keyData := requireEnv("TLS_KEY", "key used to sign tokens")
 	sm := requireEnv("SIGNING_METHOD", "signature method to use (must match the key)")
 
