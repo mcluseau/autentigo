@@ -20,9 +20,8 @@ var (
 
 func main() {
 	log.SetPrefix("azctl: ")
-	if err := cmdAzctl.Execute(); err != nil {
-		log.Fatal("command failed: ", err)
-	}
+	log.SetFlags(log.Lshortfile)
+	fail(cmdAzctl.Execute())
 }
 
 func fail(err error) {
