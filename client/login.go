@@ -25,7 +25,7 @@ func (c *Client) Login(username, password string) (result LoginResult, err error
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		err = fmt.Errorf("login request failed with status code %d: %s", res.StatusCode, res.Status)
+		err = fmt.Errorf("login request failed: %s", res.Status)
 		return
 	}
 
