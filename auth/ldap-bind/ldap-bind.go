@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/mcluseau/autorizo/api"
+	"github.com/mcluseau/autentigo/api"
 	"gopkg.in/ldap.v2"
 )
 

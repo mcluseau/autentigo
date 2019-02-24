@@ -4,7 +4,7 @@
 
 ```sh
 export AUTH_BACKEND=file \
-export AUTH_FILE="autorizo-users.csv" \
+export AUTH_FILE="autentigo-users.csv" \
 companion-api
 ```
 

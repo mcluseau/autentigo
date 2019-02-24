@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"github.com/mcluseau/autorizo/auth"
+	"github.com/mcluseau/autentigo/auth"
 )
 
 // UserData is a simple user struct with paswordhash and claims

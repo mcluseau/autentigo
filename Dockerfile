@@ -1,11 +1,11 @@
 from golang:1.11.5-alpine3.8 as build-env
 run apk update && apk add gcc musl-dev
-env pkg github.com/mcluseau/autorizo
-add . /go/src/$pkg
-run cd /go/src/$pkg \
- && go test ./... \
+env pkg github.com/mcluseau/autentigo
+workdir /go/src/$pkg
+add . .
+run go test ./... \
  && go install . ./cmd/...
 
 from alpine:3.8
-entrypoint ["/bin/autorizo"]
+entrypoint ["/bin/autentigo"]
 copy --from=build-env /go/bin/ /bin

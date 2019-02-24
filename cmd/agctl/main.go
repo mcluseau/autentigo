@@ -8,7 +8,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 
-	"github.com/mcluseau/autorizo/client"
+	"github.com/mcluseau/autentigo/client"
 )
 
 var (

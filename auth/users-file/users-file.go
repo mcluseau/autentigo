@@ -11,8 +11,8 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 
-	"github.com/mcluseau/autorizo/api"
-	"github.com/mcluseau/autorizo/auth"
+	"github.com/mcluseau/autentigo/api"
+	"github.com/mcluseau/autentigo/auth"
 )
 
 var yesValues = map[string]bool{

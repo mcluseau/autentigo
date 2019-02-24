@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/mcluseau/autorizo)](https://goreportcard.com/report/github.com/mcluseau/autorizo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mcluseau/autentigo)](https://goreportcard.com/report/github.com/mcluseau/autentigo)
 
 ## Running
 
@@ -6,7 +6,7 @@
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout tls.key -out tls.crt -subj /CN=localhost
 export TLS_CRT="$(<tls.crt)" TLS_KEY="$(<tls.key)"
 export SIGNING_METHOD=RS256
-autorizo
+autentigo
 ```
 
 ### Request examples
@@ -83,7 +83,7 @@ Content-Length: 67
 ### Flags
 
 ```
-autorizo --help
+autentigo --help
 ```
 
 ### Environment
@@ -126,7 +126,7 @@ Example:
 AUTH_BACKEND=ldap-bind \
 LDAP_SERVER=ldap://localhost:389 \
 LDAP_USER=uid=%s,ou=users,dc=example,dc=com \
-autorizo
+autentigo
 ```
 
 #### etcd lookup
@@ -138,7 +138,7 @@ Example:
 AUTH_BACKEND=etcd \
 ETCD_ENDPOINTS=http://localhost:2379 \
 ETCD_PREFIX=/users \
-autorizo
+autentigo
 ```
 
 Allowed extra claims in the etcd object:

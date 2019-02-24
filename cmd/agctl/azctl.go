@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mcluseau/autorizo/client"
+	"github.com/mcluseau/autentigo/client"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

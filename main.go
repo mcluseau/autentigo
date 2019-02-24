@@ -15,11 +15,11 @@ import (
 	"github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
 
-	"github.com/mcluseau/autorizo/api"
-	"github.com/mcluseau/autorizo/auth/etcd"
-	"github.com/mcluseau/autorizo/auth/ldap-bind"
-	"github.com/mcluseau/autorizo/auth/stupid-auth"
-	"github.com/mcluseau/autorizo/auth/users-file"
+	"github.com/mcluseau/autentigo/api"
+	"github.com/mcluseau/autentigo/auth/etcd"
+	"github.com/mcluseau/autentigo/auth/ldap-bind"
+	"github.com/mcluseau/autentigo/auth/stupid-auth"
+	"github.com/mcluseau/autentigo/auth/users-file"
 )
 
 var (

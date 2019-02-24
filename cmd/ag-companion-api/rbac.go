@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	rbacFile = flag.String("rbac-file", "/etc/autorizo/rbac.yaml", "HTTP bind specification")
+	rbacFile = flag.String("rbac-file", "/etc/autentigo/rbac.yaml", "HTTP bind specification")
 
 	rbacRules []RBACRule
 )

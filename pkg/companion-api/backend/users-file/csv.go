@@ -96,7 +96,7 @@ func tmpFileName() (fileName string) {
 	if err == nil {
 		fileName = uuid.String()
 	} else {
-		fileName = "autorizo-companion-api-tmp.csv"
+		fileName = "autentigo-companion-api-tmp.csv"
 	}
 	return
 }

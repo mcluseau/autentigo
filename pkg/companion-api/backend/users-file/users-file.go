@@ -6,9 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mcluseau/autorizo/auth"
-	"github.com/mcluseau/autorizo/pkg/companion-api/api"
-	"github.com/mcluseau/autorizo/pkg/companion-api/backend"
+	"github.com/mcluseau/autentigo/auth"
+	"github.com/mcluseau/autentigo/pkg/companion-api/api"
+	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
 )
 
 var toBool = map[string]bool{
