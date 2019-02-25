@@ -2,3 +2,7 @@
 /autentigo
 /agctl
 /modd.conf
+/modd-local.conf
+/ag2dovecot-passwd-file
+/passwd
+/passwd.rev
