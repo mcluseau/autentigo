@@ -8,4 +8,4 @@ run go test ./... \
 
 from alpine:3.8
 entrypoint ["/bin/autentigo"]
-copy --from=build-env /go/bin/ /bin
+copy --from=build-env /go/bin/ /bin/
