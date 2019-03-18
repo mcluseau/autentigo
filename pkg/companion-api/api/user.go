@@ -49,6 +49,14 @@ func (cApi *CompanionAPI) usersWS() (ws *restful.WebService) {
 			Consumes("application/json").
 			Param(ws.PathParameter("user-id", "identifier of the user").DataType("string")))
 
+	ws.
+		Route(ws.PUT("/users/{user-id}/password").
+			To(cApi.updateUserPassword).
+			Doc("Update an existing user's password.").
+			Consumes("application/json").
+			Param(ws.PathParameter("user-id", "identifier of the user").DataType("string")).
+			Reads(backend.UserData{}))
+
 	return
 }
 
@@ -127,4 +135,9 @@ func (cApi *CompanionAPI) deleteUser(request *restful.Request, response *restful
 	}
 
 	response.WriteHeader(http.StatusOK)
+}
+
+func (cApi *CompanionAPI) updateUserPassword(request *restful.Request, response *restful.Response) {
+	id := request.PathParameter("user-id")
+	cApi.updatePassword(id, request, response)
 }

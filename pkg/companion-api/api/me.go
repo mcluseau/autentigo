@@ -27,7 +27,7 @@ func (cApi *CompanionAPI) meWS() (ws *restful.WebService) {
 
 	ws.
 		Route(ws.PUT("/me/password").
-			To(cApi.updatePassword).
+			To(cApi.updateMyPassword).
 			Doc("Update the authenticated user's password.").
 			Reads(UpdatePasswordReq{}))
 
@@ -47,9 +47,13 @@ type UpdatePasswordReq struct {
 	NewPassword string
 }
 
-func (cApi *CompanionAPI) updatePassword(request *restful.Request, response *restful.Response) {
+func (cApi *CompanionAPI) updateMyPassword(request *restful.Request, response *restful.Response) {
 	u := request.Attribute("user").(*rbac.User)
 
+	cApi.updatePassword(u.Name, request, response)
+}
+
+func (cApi *CompanionAPI) updatePassword(userName string, request *restful.Request, response *restful.Response) {
 	r := &UpdatePasswordReq{}
 	if err := request.ReadEntity(r); err != nil {
 		response.WriteError(http.StatusBadRequest, err)
@@ -59,13 +63,13 @@ func (cApi *CompanionAPI) updatePassword(request *restful.Request, response *res
 	h := sha256.Sum256([]byte(r.NewPassword))
 	passwordHash := hex.EncodeToString(h[:])
 
-	err := cApi.Client.UpdateUser(u.Name, func(user *backend.UserData) error {
+	err := cApi.Client.UpdateUser(userName, func(user *backend.UserData) error {
 		user.PasswordHash = passwordHash
 		return nil
 	})
 
 	if err != nil {
-		log.Print("update error on user ", u.Name, ": ", err)
+		log.Print("update error on user ", userName, ": ", err)
 		sc := http.StatusInternalServerError
 		response.WriteErrorString(sc, http.StatusText(sc))
 		return
