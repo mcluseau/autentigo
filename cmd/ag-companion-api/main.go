@@ -45,7 +45,8 @@ func main() {
 	}
 
 	cAPI := &companionapi.CompanionAPI{
-		Client: getBackEndClient(),
+		Client:     getBackEndClient(),
+		AdminToken: *adminToken,
 	}
 
 	restful.DefaultRequestContentType(restful.MIME_JSON)

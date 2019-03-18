@@ -23,7 +23,8 @@ var (
 
 // CompanionAPI registering with restful
 type CompanionAPI struct {
-	Client backend.Client
+	Client     backend.Client
+	AdminToken string
 }
 
 // Register provide a restful.WebService from this API
@@ -34,8 +35,13 @@ func (cApi *CompanionAPI) WebServices() []*restful.WebService {
 	}
 }
 
-func requireRole(role string) restful.FilterFunction {
+func requireRole(bypass, role string) restful.FilterFunction {
 	return func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+		if len(bypass) != 0 && req.HeaderParameter("Authorization") == "Bearer "+bypass {
+			chain.ProcessFilter(req, resp)
+			return
+		}
+
 		u := rbac.UserFromRequest(req.Request, rbac.DefaultValidationCertificate)
 		if u == nil {
 			sc := http.StatusForbidden

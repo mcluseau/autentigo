@@ -16,7 +16,7 @@ func (cApi *CompanionAPI) meWS() (ws *restful.WebService) {
 	ws = &restful.WebService{}
 	ws.Consumes(restful.MIME_JSON)
 	ws.Produces(restful.MIME_JSON)
-	ws.Filter(requireRole("self-service"))
+	ws.Filter(requireRole("", "self-service"))
 	ws.Doc("Requires the self-service role")
 
 	ws.

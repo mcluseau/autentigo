@@ -17,7 +17,7 @@ type CreateUserReq struct {
 // Register provide a restful.WebService from this API
 func (cApi *CompanionAPI) usersWS() (ws *restful.WebService) {
 	ws = &restful.WebService{}
-	ws.Filter(requireRole("admin"))
+	ws.Filter(requireRole(cApi.AdminToken, "admin"))
 	ws.Doc("Requires the admin role")
 
 	ws.
