@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 
-	jwt "github.com/dgrijalva/jwt-go"
-
 	"github.com/mcluseau/autentigo/client"
 )
 
@@ -37,8 +35,7 @@ func resetTerm() {
 }
 
 func validate(token string) {
-	claims := jwt.MapClaims{}
-	ok, err := az.Validate(token, claims)
+	ok, err := az.Validate(token)
 
 	if err != nil {
 		fmt.Println(err.Error())

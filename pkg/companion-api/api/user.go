@@ -15,7 +15,11 @@ type CreateUserReq struct {
 }
 
 // Register provide a restful.WebService from this API
-func (cApi *CompanionAPI) registerUsers(ws *restful.WebService) {
+func (cApi *CompanionAPI) usersWS() (ws *restful.WebService) {
+	ws = &restful.WebService{}
+	ws.Filter(requireRole("admin"))
+	ws.Doc("Requires the admin role")
+
 	ws.
 		Route(ws.POST("/users").
 			To(cApi.createUser).
@@ -45,6 +49,7 @@ func (cApi *CompanionAPI) registerUsers(ws *restful.WebService) {
 			Consumes("application/json").
 			Param(ws.PathParameter("user-id", "identifier of the user").DataType("string")))
 
+	return
 }
 
 func (cApi *CompanionAPI) createUser(request *restful.Request, response *restful.Response) {

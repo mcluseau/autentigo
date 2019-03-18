@@ -5,6 +5,7 @@ import (
 
 	restful "github.com/emicklei/go-restful"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
+	"github.com/mcluseau/autentigo/pkg/rbac"
 )
 
 var (
@@ -26,8 +27,30 @@ type CompanionAPI struct {
 }
 
 // Register provide a restful.WebService from this API
-func (cApi *CompanionAPI) Register() *restful.WebService {
-	ws := &restful.WebService{}
-	cApi.registerUsers(ws)
-	return ws
+func (cApi *CompanionAPI) WebServices() []*restful.WebService {
+	return []*restful.WebService{
+		cApi.meWS(),
+		cApi.usersWS(),
+	}
+}
+
+func requireRole(role string) restful.FilterFunction {
+	return func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+		u := rbac.UserFromRequest(req.Request, rbac.DefaultValidationCertificate)
+		if u == nil {
+			sc := http.StatusForbidden
+			resp.WriteErrorString(sc, http.StatusText(sc))
+			return
+		}
+
+		if !rbac.Match(role, u) {
+			sc := http.StatusForbidden
+			resp.WriteErrorString(sc, http.StatusText(sc))
+			return
+		}
+
+		req.SetAttribute("user", u)
+
+		chain.ProcessFilter(req, resp)
+	}
 }

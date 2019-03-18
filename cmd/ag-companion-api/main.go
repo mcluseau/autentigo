@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -17,18 +18,30 @@ import (
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend/etcd"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend/users-file"
+	"github.com/mcluseau/autentigo/pkg/rbac"
 )
 
 var (
-	bind        = flag.String("bind", ":8181", "HTTP bind specification")
-	disableCORS = flag.Bool("no-cors", false, "Disable CORS support")
+	bind              = flag.String("bind", ":8181", "HTTP bind specification")
+	validationCrtPath = flag.String("validation-cert", "/etc/autentigo/ag.crt", "Certificate to validate tokens")
+	disableCORS       = flag.Bool("no-cors", false, "Disable CORS support")
+	rbacFile          = flag.String("rbac-file", "/etc/autentigo/rbac.yaml", "HTTP bind specification")
+	adminToken        = flag.String("admin-token", "", "Administration token, useful when no users are defined")
+
+	validationCrt []byte
 )
 
 func main() {
 	flag.Parse()
 
-	if err := loadRBAC(); err != nil {
+	var err error
+
+	if rbac.Default, err = rbac.FromFile(*rbacFile); err != nil {
 		log.Fatal("failed to load RBAC rules: ", err)
+	}
+
+	if rbac.DefaultValidationCertificate, err = ioutil.ReadFile(*validationCrtPath); err != nil {
+		log.Fatal("failed to read validation certificate: ", err)
 	}
 
 	cAPI := &companionapi.CompanionAPI{
@@ -39,7 +52,9 @@ func main() {
 	restful.DefaultResponseContentType(restful.MIME_JSON)
 	restful.DefaultContainer.Router(restful.CurlyRouter{})
 
-	restful.Add(cAPI.Register())
+	for _, ws := range cAPI.WebServices() {
+		restful.Add(ws)
+	}
 
 	config := restfulspec.Config{
 		WebServices: restful.RegisteredWebServices(),
@@ -74,7 +89,6 @@ func main() {
 }
 
 func getBackEndClient() backend.Client {
-
 	switch v := os.Getenv("AUTH_BACKEND"); v {
 	case "stupid":
 		log.Fatal("Stupid backend does not need the companion-api")

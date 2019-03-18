@@ -8,7 +8,22 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func (c *Client) Validate(tokenString string, claims jwt.Claims) (isValid bool, err error) {
+func Parse(validationCrt []byte, tokenString string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		switch alg := token.Method.Alg(); alg {
+		case "ES256", "ES384", "ES512":
+			return jwt.ParseECPublicKeyFromPEM(validationCrt)
+
+		case "RS256", "RS384", "RS512":
+			return jwt.ParseRSAPublicKeyFromPEM(validationCrt)
+
+		default:
+			return nil, fmt.Errorf("unknown signing method: %s", alg)
+		}
+	})
+}
+
+func (c *Client) Validate(tokenString string) (isValid bool, err error) {
 	if c.validationCrt == nil {
 		err = c.RefreshValidationCertificate()
 		if err != nil {
@@ -16,22 +31,7 @@ func (c *Client) Validate(tokenString string, claims jwt.Claims) (isValid bool, 
 		}
 	}
 
-	if claims == nil {
-		claims = jwt.MapClaims{}
-	}
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		switch alg := token.Method.Alg(); alg {
-		case "ES256", "ES384", "ES512":
-			return jwt.ParseECPublicKeyFromPEM(c.validationCrt)
-
-		case "RS256", "RS384", "RS512":
-			return jwt.ParseRSAPublicKeyFromPEM(c.validationCrt)
-
-		default:
-			return nil, fmt.Errorf("unknown signing method: %s", alg)
-		}
-	})
+	token, err := Parse(c.validationCrt, tokenString)
 
 	if err != nil {
 		return
