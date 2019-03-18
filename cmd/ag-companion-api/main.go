@@ -60,7 +60,7 @@ func main() {
 		WebServices: restful.RegisteredWebServices(),
 		APIPath:     "/apidocs.json",
 	}
-	restful.DefaultContainer.Add(restfulspec.NewOpenAPIService(config))
+	restful.Add(restfulspec.NewOpenAPIService(config))
 
 	if !*disableCORS {
 		restful.Filter(restful.CrossOriginResourceSharing{
