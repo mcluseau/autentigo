@@ -44,7 +44,7 @@ func requireRole(bypass, role string) restful.FilterFunction {
 
 		u := rbac.UserFromRequest(req.Request, rbac.DefaultValidationCertificate)
 		if u == nil {
-			sc := http.StatusForbidden
+			sc := http.StatusUnauthorized
 			resp.WriteErrorString(sc, http.StatusText(sc))
 			return
 		}
