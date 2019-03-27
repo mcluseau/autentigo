@@ -17,7 +17,7 @@ var (
 	ErrMissingUserPassword = restful.NewError(http.StatusUnprocessableEntity, "No user password given.")
 	// ErrUserAlreadyExist indicates an existing user that should not be.
 	ErrUserAlreadyExist = restful.NewError(http.StatusConflict, "User already exist")
-	//ErrPatchFail indicates the json-patch update fails.
+	// ErrPatchFail indicates the json-patch update fails.
 	ErrPatchFail = restful.NewError(http.StatusConflict, "Patch update fails")
 )
 
