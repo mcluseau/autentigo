@@ -151,3 +151,27 @@ Allowed extra claims in the etcd object:
     "email_verified": true
 }
 ```
+
+#### SQL database lookup
+
+Looks up the user in the SQL database.
+
+Example:
+```sh
+AUTH_BACKEND=sql \
+SQL_DRIVER=postgres\
+SQL_DSN="user=postgres password=postgres host=localhost dbname=postgres sslmode=disable"\
+SQL_USER_TABLE=users \
+autentigo
+```
+
+Allowed extra claims in the object:
+```json
+{
+    "password_hash": "<password sha256, hex encoded)>",
+    "groups": [ "app1-admin", "app2-reader" ],
+    "display_name": "Display Name",
+    "email": "user@host",
+    "email_verified": true
+}
+```
