@@ -29,7 +29,6 @@ type sqlAuth struct {
 
 // New Authenticator with no backend
 func New(driver, dsn, table string) api.Authenticator {
-
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
 		panic(err)
@@ -44,7 +43,6 @@ func New(driver, dsn, table string) api.Authenticator {
 var _ api.Authenticator = sqlAuth{}
 
 func (sa sqlAuth) Authenticate(user, password string, expiresAt time.Time) (claims jwt.Claims, err error) {
-
 	ba := sha256.Sum256([]byte(password))
 	passwordHash := hex.EncodeToString(ba[:])
 

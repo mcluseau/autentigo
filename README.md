@@ -152,9 +152,9 @@ Allowed extra claims in the etcd object:
 }
 ```
 
-#### sql database lookup
+#### SQL database lookup
 
-Looks up the user in the sql database.
+Looks up the user in the SQL database.
 
 Example:
 ```sh
