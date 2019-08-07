@@ -6,3 +6,5 @@
 /ag2dovecot-passwd-file
 /passwd
 /passwd.rev
+/tls.crt
+/tls.key

@@ -11,15 +11,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/emicklei/go-restful"
+	jwt "github.com/dgrijalva/jwt-go"
+	restful "github.com/emicklei/go-restful"
 	restfulspec "github.com/emicklei/go-restful-openapi"
 
 	"github.com/mcluseau/autentigo/api"
 	"github.com/mcluseau/autentigo/auth/etcd"
-	"github.com/mcluseau/autentigo/auth/ldap-bind"
-	"github.com/mcluseau/autentigo/auth/stupid-auth"
-	"github.com/mcluseau/autentigo/auth/users-file"
+	ldapbind "github.com/mcluseau/autentigo/auth/ldap-bind"
+	"github.com/mcluseau/autentigo/auth/sql"
+	stupidauth "github.com/mcluseau/autentigo/auth/stupid-auth"
+	usersfile "github.com/mcluseau/autentigo/auth/users-file"
 )
 
 var (
@@ -164,7 +165,11 @@ func getAuthenticator() api.Authenticator {
 		return etcd.New(
 			requireEnv("ETCD_PREFIX", "etcd prefix"),
 			strings.Split(requireEnv("ETCD_ENDPOINTS", "etcd endpoints"), ","))
-
+	case "sql":
+		return sql.New(
+			requireEnv("SQL_DRIVER", "SQL driver (ex: postgres)"),
+			requireEnv("SQL_DSN", "SQL destination"),
+			requireEnv("SQL_USER_TABLE", "sql table with stored users"))
 	default:
 		log.Fatal("Unknown authenticator: ", v)
 		return nil
