@@ -120,6 +120,7 @@ func (cApi *CompanionAPI) registerCallback(request *restful.Request, response *r
 	}
 
 	err = cApi.Client.CreateUser(userInfos.ID, &backend.UserData{
+		OauthToken: token.AccessToken,
 		ExtraClaims: auth.ExtraClaims{
 			DisplayName:   userInfos.Name,
 			Email:         userInfos.Email,
@@ -129,6 +130,7 @@ func (cApi *CompanionAPI) registerCallback(request *restful.Request, response *r
 
 	if err == ErrUserAlreadyExist {
 		err = cApi.Client.UpdateUser(userInfos.ID, func(user *backend.UserData) (_ error) {
+			user.OauthToken = token.AccessToken
 			user.ExtraClaims.DisplayName = userInfos.Name
 			if len(userInfos.Email) != 0 && userInfos.Email != user.ExtraClaims.Email {
 				user.ExtraClaims.Email = userInfos.Email

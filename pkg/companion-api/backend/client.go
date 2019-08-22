@@ -7,6 +7,7 @@ import (
 // UserData is a simple user struct with paswordhash and claims
 type UserData struct {
 	PasswordHash string           `json:"password"`
+	OauthToken   string           `json:"oauth_token"`
 	ExtraClaims  auth.ExtraClaims `json:"claims"`
 }
 
