@@ -24,10 +24,9 @@ var (
 )
 
 func setup() {
-
 	setupOauthOnce.Do(func() {
 		oauthConfig = &oauth2.Config{
-			RedirectURL:  requireEnv("OAUTH_APP_ENDPOINT", "This app endpoint") + "/oauth/callback",
+			RedirectURL:  requireEnv("OAUTH_MYAPP_ENDPOINT", "This app endpoint") + "/oauth/callback",
 			ClientID:     requireEnv("OAUTH_CLIENTID", "oauth id given by oauth client"),
 			ClientSecret: requireEnv("OAUTH_CLIENTSECRET", "oauth secret given by oauth client"),
 			Scopes:       strings.Split(os.Getenv("OAUTH_SCOPES"), ","),
@@ -51,14 +50,15 @@ func (cApi *CompanionAPI) oauthWS() (ws *restful.WebService) {
 	ws = &restful.WebService{}
 	ws.Consumes(restful.MIME_JSON)
 	ws.Produces(restful.MIME_JSON)
+	ws.Path("/oauth")
 
 	ws.
-		Route(ws.GET("/oauth/register").
+		Route(ws.GET("/register").
 			To(cApi.register).
 			Doc("Create or update user with informations given by oauth"))
 
 	ws.
-		Route(ws.GET("/oauth/callback").
+		Route(ws.GET("/callback").
 			To(cApi.registerCallback).
 			Doc("Don't use it directly. Oauth register callback"))
 
@@ -78,7 +78,6 @@ type OAuthUserInfos struct {
 }
 
 func (cApi *CompanionAPI) registerCallback(request *restful.Request, response *restful.Response) {
-
 	state := request.Request.FormValue("state")
 	code := request.Request.FormValue("code")
 

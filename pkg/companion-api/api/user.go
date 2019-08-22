@@ -19,16 +19,17 @@ func (cApi *CompanionAPI) usersWS() (ws *restful.WebService) {
 	ws = &restful.WebService{}
 	ws.Filter(requireRole(cApi.AdminToken, "admin"))
 	ws.Doc("Requires the admin role")
+	ws.Path("/users")
 
 	ws.
-		Route(ws.POST("/users").
+		Route(ws.POST("").
 			To(cApi.createUser).
 			Doc("Create a new user.").
 			Consumes("application/json").
 			Reads(CreateUserReq{}))
 
 	ws.
-		Route(ws.PUT("/users/{user-id}").
+		Route(ws.PUT("/{user-id}").
 			To(cApi.updateUser).
 			Doc("Update an existing user.").
 			Consumes("application/json").
@@ -36,21 +37,21 @@ func (cApi *CompanionAPI) usersWS() (ws *restful.WebService) {
 			Reads(backend.UserData{}))
 
 	ws.
-		Route(ws.PATCH("/users/{user-id}").
+		Route(ws.PATCH("/{user-id}").
 			To(cApi.patchUser).
 			Doc("Patch an existing user (json-patch format).").
 			Consumes("application/json").
 			Param(ws.PathParameter("user-id", "identifier of the user").DataType("string")))
 
 	ws.
-		Route(ws.DELETE("/users/{user-id}").
+		Route(ws.DELETE("/{user-id}").
 			To(cApi.deleteUser).
 			Doc("Delete an existing user.").
 			Consumes("application/json").
 			Param(ws.PathParameter("user-id", "identifier of the user").DataType("string")))
 
 	ws.
-		Route(ws.PUT("/users/{user-id}/password").
+		Route(ws.PUT("/{user-id}/password").
 			To(cApi.updateUserPassword).
 			Doc("Update an existing user's password.").
 			Consumes("application/json").

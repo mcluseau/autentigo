@@ -18,20 +18,21 @@ func (cApi *CompanionAPI) meWS() (ws *restful.WebService) {
 	ws.Produces(restful.MIME_JSON)
 	ws.Filter(requireRole("", "self-service"))
 	ws.Doc("Requires the self-service role")
+	ws.Path("/me")
 
 	ws.
-		Route(ws.PUT("/me").
+		Route(ws.GET("").
 			To(cApi.getMe).
 			Doc("Get informations on the authenticated user.").
 			Writes(&MeResponse{}))
 
 	ws.
-		Route(ws.PUT("/me/password").
+		Route(ws.PUT("/password").
 			To(cApi.updateMyPassword).
 			Doc("Update the authenticated user's password.").
 			Reads(UpdatePasswordReq{}))
 
-	return ws
+	return
 }
 
 type MeResponse struct {
