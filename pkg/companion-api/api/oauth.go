@@ -142,8 +142,8 @@ func (cApi *CompanionAPI) registerCallback(request *restful.Request, response *r
 	if err != nil {
 		response.WriteError(http.StatusInternalServerError, fmt.Errorf("user infos cannot be upgraded in backend: %s", err.Error()))
 	}
-
-	response.WriteHeader(http.StatusTemporaryRedirect)
+	response.AddHeader("Authorization", "Bearer "+token.AccessToken)
+	response.WriteHeader(http.StatusOK)
 }
 
 func requireEnv(name, description string) string {
