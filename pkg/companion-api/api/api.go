@@ -32,6 +32,7 @@ func (cApi *CompanionAPI) WebServices() []*restful.WebService {
 	return []*restful.WebService{
 		cApi.meWS(),
 		cApi.usersWS(),
+		cApi.oauthWS(),
 	}
 }
 
