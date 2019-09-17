@@ -10,9 +10,10 @@ import (
 	"strings"
 
 	restful "github.com/emicklei/go-restful"
+	"golang.org/x/oauth2"
+
 	"github.com/mcluseau/autentigo/auth"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
-	"golang.org/x/oauth2"
 )
 
 func oauthConfig(provider string) *oauth2.Config {
