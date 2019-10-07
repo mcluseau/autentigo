@@ -7,13 +7,7 @@ import (
 // UserData is a simple user struct with paswordhash and claims
 type UserData struct {
 	PasswordHash string           `json:"password"`
-	OauthTokens  []OauthToken     `json:"oauth_tokens"`
 	ExtraClaims  auth.ExtraClaims `json:"claims"`
-}
-
-type OauthToken struct {
-	Provider string `json:"provider"`
-	Token    string `json:"token"`
 }
 
 // Client is the interface for all backends clients
@@ -21,4 +15,6 @@ type Client interface {
 	CreateUser(id string, user *UserData) error
 	UpdateUser(id string, update func(user *UserData) error) error
 	DeleteUser(id string) error
+	GetUserID(provider, clientID string) (string, error)
+	PutUserID(provider, clientID, userID string) error
 }

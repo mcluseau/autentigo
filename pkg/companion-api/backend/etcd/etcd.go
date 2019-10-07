@@ -13,6 +13,10 @@ import (
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
 )
 
+const (
+	oauthprefix = "/oauth"
+)
+
 type etcdClient struct {
 	prefix  string
 	client  *clientv3.Client
@@ -86,13 +90,39 @@ func (e *etcdClient) DeleteUser(id string) (err error) {
 	return
 }
 
-func (e *etcdClient) getUser(id string) (user *backend.UserData, err error) {
-
+func (e *etcdClient) PutUserID(provider, clientID, userID string) (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 
-	resp, err := e.client.Get(ctx, path.Join(e.prefix, id))
-	if err != nil {
+	_, err = e.client.Put(ctx, path.Join(oauthprefix, e.prefix, provider, clientID), userID)
+
+	return
+}
+
+func (e *etcdClient) GetUserID(provider, clientID string) (userID string, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	defer cancel()
+
+	var resp *clientv3.GetResponse
+	if resp, err = e.client.Get(ctx, path.Join(oauthprefix, e.prefix, provider, clientID)); err != nil {
+		return
+	}
+
+	if len(resp.Kvs) == 0 {
+		err = api.ErrMissingUser
+		return
+	}
+
+	userID = string(resp.Kvs[0].Value)
+	return
+}
+
+func (e *etcdClient) getUser(id string) (user *backend.UserData, err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	defer cancel()
+
+	var resp *clientv3.GetResponse
+	if resp, err = e.client.Get(ctx, path.Join(e.prefix, id)); err != nil {
 		return
 	}
 

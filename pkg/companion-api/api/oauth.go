@@ -10,11 +10,17 @@ import (
 	"strings"
 
 	restful "github.com/emicklei/go-restful"
+	uuid "github.com/nu7hatch/gouuid"
 	"golang.org/x/oauth2"
 
 	"github.com/mcluseau/autentigo/auth"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
 )
+
+type State struct {
+	State  string
+	UserID string
+}
 
 func oauthConfig(provider string) *oauth2.Config {
 	upperCaseProvider := strings.ToUpper(provider)
@@ -31,9 +37,9 @@ func oauthConfig(provider string) *oauth2.Config {
 	}
 }
 
-func oauthUserInfosURL(provider string) string {
+func oauthClientIdentityURL(provider string) string {
 	upperCaseProvider := strings.ToUpper(provider)
-	return requireEnv(upperCaseProvider+"_USERINFOSURL", "url of the client user informations provider")
+	return requireEnv(upperCaseProvider+"_USERIDENTITYURL", "client identity url given by provider "+provider)
 }
 
 func oauthState() (state string) {
@@ -53,7 +59,7 @@ func (cApi *CompanionAPI) oauthWS() (ws *restful.WebService) {
 	ws.Path("/oauth")
 
 	ws.
-		Route(ws.GET("/{provider}").
+		Route(ws.GET("/{provider}/{user-id}").
 			To(cApi.register).
 			Param(ws.PathParameter("provider", "oauth client").DataType("string")).
 			Doc("Create or update user with informations given by oauth"))
@@ -69,23 +75,39 @@ func (cApi *CompanionAPI) oauthWS() (ws *restful.WebService) {
 
 func (cApi *CompanionAPI) register(request *restful.Request, response *restful.Response) {
 	provider := request.PathParameter("provider")
-	url := oauthConfig(provider).AuthCodeURL(oauthState())
-	http.Redirect(response.ResponseWriter, request.Request, url, http.StatusTemporaryRedirect)
-}
+	userID := request.PathParameter("user-id")
 
-type OAuthUserInfos struct {
-	ID    string
-	Name  string
-	Email string
+	if len(userID) == 0 {
+		id, err := uuid.NewV4()
+		if err != nil {
+			response.WriteError(http.StatusUnprocessableEntity, err)
+			return
+		}
+		userID = id.String()
+	}
+
+	state, err := json.Marshal(State{oauthState(), userID})
+	if err != nil {
+		panic(err)
+	}
+
+	url := oauthConfig(provider).AuthCodeURL(string(state))
+	http.Redirect(response.ResponseWriter, request.Request, url, http.StatusTemporaryRedirect)
 }
 
 func (cApi *CompanionAPI) callback(request *restful.Request, response *restful.Response) {
 	provider := request.PathParameter("provider")
-	state := request.Request.FormValue("state")
 	code := request.Request.FormValue("code")
 
-	if state != oauthState() {
+	state := &State{}
+	if err := json.Unmarshal([]byte(request.Request.FormValue("state")), state); err != nil {
+		response.WriteErrorString(http.StatusUnprocessableEntity, "invalid oauth state form")
+		return
+	}
+
+	if state.State != oauthState() {
 		response.WriteErrorString(http.StatusUnauthorized, "invalid oauth state")
+		return
 	}
 
 	token, err := oauthConfig(provider).Exchange(oauth2.NoContext, code)
@@ -98,72 +120,76 @@ func (cApi *CompanionAPI) callback(request *restful.Request, response *restful.R
 		return
 	}
 
-	infoResp, err := http.Get(oauthUserInfosURL(provider) + "?fields=name,email&access_token=" + token.AccessToken)
+	identityResponse, err := http.Get(oauthClientIdentityURL(provider) + "?access_token=" + token.AccessToken)
 	if err != nil {
-		response.WriteError(http.StatusUnauthorized, fmt.Errorf("failed getting user info: %s", err.Error()))
+		response.WriteError(http.StatusUnauthorized, fmt.Errorf("failed getting client identity: %s", err.Error()))
 		return
 	}
 
-	defer infoResp.Body.Close()
-	contents, err := ioutil.ReadAll(infoResp.Body)
+	defer identityResponse.Body.Close()
+	contents, err := ioutil.ReadAll(identityResponse.Body)
 	if err != nil {
 		response.WriteError(http.StatusUnprocessableEntity, fmt.Errorf("failed reading response body: %s", err.Error()))
 		return
 	}
 
-	userInfos := OAuthUserInfos{}
-	if err := json.Unmarshal(contents, &userInfos); err != nil {
+	var clientIdentity map[string]interface{}
+	if err := json.Unmarshal(contents, &clientIdentity); err != nil {
 		response.WriteError(http.StatusUnprocessableEntity, fmt.Errorf("failed unmarshalling contents: %s", err.Error()))
 		return
 	}
 
-	if len(userInfos.ID) == 0 {
-		response.WriteErrorString(http.StatusUnprocessableEntity, "user infos given by oauth are unprocessable")
-		return
+	id := stringValue(clientIdentity, "id")
+	name := stringValue(clientIdentity, "name")
+	email := stringValue(clientIdentity, "email")
+
+	if len(id) == 0 {
+		id = stringValue(clientIdentity, "sub") // different between some oauth providers
+		if len(id) == 0 {
+			response.WriteErrorString(http.StatusUnprocessableEntity, "client identity given by oauth is unprocessable")
+			return
+		}
 	}
 
 	b := &backend.UserData{
-		OauthTokens: []backend.OauthToken{backend.OauthToken{
-			Provider: provider,
-			Token:    token.AccessToken,
-		}},
 		ExtraClaims: auth.ExtraClaims{
-			DisplayName:   userInfos.Name,
-			Email:         userInfos.Email,
+			DisplayName:   name,
+			Email:         email,
 			EmailVerified: true,
 		},
 	}
-	err = cApi.Client.CreateUser(userInfos.ID, b)
+	err = cApi.Client.CreateUser(state.UserID, b)
 
 	if err == ErrUserAlreadyExist {
-		err = cApi.Client.UpdateUser(userInfos.ID, func(user *backend.UserData) (_ error) {
-			found := false
-			for _, uToken := range user.OauthTokens {
-				if uToken.Provider == provider {
-					uToken.Token = token.AccessToken
-					found = true
-					break
-				}
-			}
-			if !found {
-				user.OauthTokens = append(user.OauthTokens, backend.OauthToken{
-					Provider: provider,
-					Token:    token.AccessToken,
-				})
-			}
-			user.ExtraClaims.DisplayName = userInfos.Name
-			if len(userInfos.Email) != 0 && userInfos.Email != user.ExtraClaims.Email {
-				user.ExtraClaims.Email = userInfos.Email
+		err = cApi.Client.UpdateUser(state.UserID, func(user *backend.UserData) (_ error) {
+			user.ExtraClaims.DisplayName = name
+			if len(email) != 0 && email != user.ExtraClaims.Email {
+				user.ExtraClaims.Email = email
 				user.ExtraClaims.EmailVerified = true
 			}
 			return
 		})
 	}
 	if err != nil {
-		response.WriteError(http.StatusInternalServerError, fmt.Errorf("user infos cannot be upgraded in backend: %s", err.Error()))
+		response.WriteError(http.StatusInternalServerError, fmt.Errorf("client identity cannot be upgraded in backend: %s", err.Error()))
+		return
 	}
+
+	if err = cApi.Client.PutUserID(provider, id, state.UserID); err != nil {
+		response.WriteError(http.StatusInternalServerError, fmt.Errorf("oauth information cannot be upgraded in backend: %s", err.Error()))
+		return
+	}
+
 	response.AddHeader("Authorization", "Bearer "+token.AccessToken)
 	response.WriteHeader(http.StatusOK)
+}
+
+func stringValue(m map[string]interface{}, field string) string {
+	v, ok := m[field]
+	if !ok {
+		return ""
+	}
+	return v.(string)
 }
 
 func requireEnv(name, description string) string {

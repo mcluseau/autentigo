@@ -1,9 +1,10 @@
 package stupidauth
 
 import (
+	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/mcluseau/autentigo/api"
 )
 
@@ -22,4 +23,9 @@ func (sa stupidAuth) Authenticate(user, password string, expiresAt time.Time) (j
 		ExpiresAt: expiresAt.Unix(),
 		Subject:   user,
 	}, nil
+}
+
+func (sa stupidAuth) FindUser(clientID, provider string, expiresAt time.Time) (userID string, claims jwt.Claims, err error) {
+	err = errors.New("inconsistent with stupid auth")
+	return
 }

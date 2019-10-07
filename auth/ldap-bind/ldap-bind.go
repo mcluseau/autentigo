@@ -2,14 +2,15 @@ package ldapbind
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/mcluseau/autentigo/api"
-	"gopkg.in/ldap.v2"
+	ldap "gopkg.in/ldap.v2"
 )
 
 // New Authenticator with ldap backend
@@ -63,4 +64,9 @@ func (a auth) Authenticate(user, password string, expiresAt time.Time) (jwt.Clai
 		ExpiresAt: expiresAt.Unix(),
 		Subject:   user,
 	}, nil
+}
+
+func (a auth) FindUser(clientID, provider string, expiresAt time.Time) (userID string, claims jwt.Claims, err error) {
+	err = errors.New("inconsistent with Ldap backend")
+	return
 }
