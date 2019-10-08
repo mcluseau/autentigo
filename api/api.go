@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/emicklei/go-restful"
+	jwt "github.com/dgrijalva/jwt-go"
+	restful "github.com/emicklei/go-restful"
 )
 
 var (
@@ -16,6 +16,7 @@ var (
 // Authenticator is the interface for authn backends
 type Authenticator interface {
 	Authenticate(user, password string, expiresAt time.Time) (claims jwt.Claims, err error)
+	FindUser(clientID, provider string, expiresAt time.Time) (user string, claims jwt.Claims, err error)
 }
 
 // API registering with restful
@@ -36,5 +37,6 @@ func (api *API) Register() *restful.WebService {
 	api.registerKeystone(ws)
 	api.registerK8sAuthenticator(ws)
 	api.registerCertificate(ws)
+	api.registerOauth(ws)
 	return ws
 }

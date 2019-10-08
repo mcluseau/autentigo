@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/csv"
 	"encoding/hex"
+	"errors"
 	"io"
 	"os"
 	"strings"
@@ -95,4 +96,9 @@ func (a usersFileAuth) Authenticate(user, password string, expiresAt time.Time) 
 	}
 
 	return nil, api.ErrInvalidAuthentication
+}
+
+func (a usersFileAuth) FindUser(clientID, provider string, expiresAt time.Time) (userID string, claims jwt.Claims, err error) {
+	err = errors.New("Not implemented yet")
+	return
 }

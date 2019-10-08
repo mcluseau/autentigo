@@ -15,4 +15,6 @@ type Client interface {
 	CreateUser(id string, user *UserData) error
 	UpdateUser(id string, update func(user *UserData) error) error
 	DeleteUser(id string) error
+	GetUserID(provider, clientID string) (string, error)
+	PutUserID(provider, clientID, userID string) error
 }

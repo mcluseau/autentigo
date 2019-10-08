@@ -17,7 +17,7 @@ import (
 	companionapi "github.com/mcluseau/autentigo/pkg/companion-api/api"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend"
 	"github.com/mcluseau/autentigo/pkg/companion-api/backend/etcd"
-	"github.com/mcluseau/autentigo/pkg/companion-api/backend/users-file"
+	usersfile "github.com/mcluseau/autentigo/pkg/companion-api/backend/users-file"
 	"github.com/mcluseau/autentigo/pkg/rbac"
 )
 

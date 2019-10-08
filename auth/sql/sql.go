@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -72,5 +73,10 @@ func (sa sqlAuth) Authenticate(user, password string, expiresAt time.Time) (clai
 		ExtraClaims: u.ExtraClaims,
 	}
 
+	return
+}
+
+func (sa sqlAuth) FindUser(clientID, provider string, expiresAt time.Time) (userID string, claims jwt.Claims, err error) {
+	err = errors.New("Not implemented yet")
 	return
 }

@@ -162,6 +162,18 @@ func (fc *fileClient) putUser(id, passwordHash string, claims auth.ExtraClaims) 
 	return nil
 }
 
+func (fc *fileClient) GetUserID(provider, clientID string) (userID string, err error) {
+
+	//TODO: need to be implemented
+	return
+}
+
+func (fc *fileClient) PutUserID(provider, clientID, userID string) (err error) {
+
+	//TODO: need to be implemented
+	return
+}
+
 func (fc *fileClient) getUser(id string) (*backend.UserData, error) {
 
 	reader, err := newUsersFileReader(fc.filePath)
